@@ -348,7 +348,12 @@ http_conn::HTTP_CODE http_conn::do_request()
     int len = strlen(doc_root);
     //Insert my post code
     if(strncasecmp(m_url, "/test", 5)==0)
-        strcpy(m_url, "/test.html");
+        strcpy(m_url, "/log.html");
+    //Get POST request and process m_content
+    else if(strncasecmp(m_url, "/login", 6)==0)
+    {
+        strcpy(m_url, "/caton5.png");
+    }
 
     strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
     if (stat(m_real_file, &m_file_stat) < 0)
