@@ -90,6 +90,7 @@ int main(int argc, char* argv[])
     int epollfd = epoll_create(5);
     assert(epollfd != -1);
     addfd(epollfd, listenfd, false);
+    //这里传参是为了设置使httpconn.cpp中的removefd和modfd可以设置epoll的函数
     http_conn::m_epollfd = epollfd;
 
     while(true)
