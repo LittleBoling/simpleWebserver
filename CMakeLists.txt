@@ -13,6 +13,7 @@ find_package(Threads REQUIRED)
 include_directories(locker)
 include_directories(threadpool)
 include_directories(httpconn)
+include_directories(timer)
 
 add_executable(webserver server.cpp)
 

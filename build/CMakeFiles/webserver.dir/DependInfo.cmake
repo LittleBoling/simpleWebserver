@@ -13,6 +13,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../locker"
   "../threadpool"
   "../httpconn"
+  "../timer"
   )
 
 # Targets to which this target links.

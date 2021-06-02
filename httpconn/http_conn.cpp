@@ -16,6 +16,8 @@ const char * error_500_form = "There was an unusual problem serving the request 
 //网站的根目录
 const char * doc_root = "../testfile";
 
+//设置socket文件描述符为非阻塞
+//这是因为ET模式要求其文件描述符应该为非阻塞的，否则容易产生丢失连接的问题
 int setnonblocking(int fd)
 {
     int old_option = fcntl(fd, F_GETFL);
@@ -24,6 +26,7 @@ int setnonblocking(int fd)
     return old_option;
 }
 
+//设置EPOLL的工作模式，可选填是否设置oneshot
 void addfd(int epollfd, int fd, bool one_shot)
 {
     epoll_event event;
@@ -37,12 +40,14 @@ void addfd(int epollfd, int fd, bool one_shot)
     setnonblocking(fd);
 }
 
+//@Function: 将监听的文件描述符从epoll的文件描述符集合中移除
 void removefd(int epollfd, int fd)
 {
     epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, 0);
     close(fd);
 }
 
+//该函数是为了重置某个socket上的oneshot时间，以便于其他线程也可以为该线程服务
 void modfd(int epollfd, int fd, int ev)
 {
     epoll_event event;
@@ -54,40 +59,46 @@ void modfd(int epollfd, int fd, int ev)
 int http_conn::m_user_count = 0;
 int http_conn::m_epollfd = -1;
 
+//通过删除epoll中文件描述符集合的方式关闭连接
+//.h文件的声明中设置了默认值为true
 void http_conn::close_conn(bool real_close)
 {
     if (real_close && (m_sockfd != -1)) 
     {
        removefd(m_epollfd, m_sockfd);
        m_sockfd = -1;
+       //user_count是static类型，因此会一直计数
        m_user_count --;   //关闭一个连接时, 将客户总量减一
     }
 }
 
-
+//该函数由主函数的监听函数调用
 void http_conn::init(int sockfd, const sockaddr_in &addr)
 {
     m_sockfd = sockfd;
     m_address = addr;
     //如下两行是为了避免TIME_WAIT状态， 仅用于调试，实际使用时应该去掉
-    int reuse = 1;
-    setsockopt(m_sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+    // int reuse = 1;
+    // setsockopt(m_sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     addfd(m_epollfd, sockfd, true);
     m_user_count ++;
-    
+   
+    //此处是根据特征标的不同重载的函数
+    //特征标一词出现在C++ primer plus中文版函数重载这一章节
     init();
 }
 
+//初始化需要使用的全局变量
 void http_conn::init()
 {
-    m_check_state = CHECK_STATE_REQUESTLINE;
+    m_check_state = CHECK_STATE_REQUESTLINE;//标记当前行是HTTP请求中（请求头/请求行/请求内容）的哪一部分
     m_linger = false;
 
-    m_method = GET;
-    m_url    = 0;
+    m_method = GET;//提取GET或POST方法
+    m_url    = 0; //该变量严格来说应该是存储的端口号后面的具体的方法或文件路径
     m_version = 0;
-    m_content = 0;
-    m_content_length = 0;
+    m_content = 0;//POST方法的内容
+    m_content_length = 0;//内容的长度
     m_host = 0;
     m_start_line = 0;
     m_checked_idx = 0;
@@ -99,7 +110,7 @@ void http_conn::init()
 }
 
 
-//从状态机，其分析请参考8.6节
+//从状态机解析的是当前被解析行的状态，分成未读完，读完没毛病和读完有毛病三部分
 http_conn::LINE_STATUS http_conn::parse_line()
 {
     char temp;
@@ -108,12 +119,16 @@ http_conn::LINE_STATUS http_conn::parse_line()
         temp = m_read_buf[m_checked_idx];
         if (temp == '\r') 
         {
+            //由于m_read_idx标记的是当前缓冲区最后一个数据的下一个位置
+            //因此若+1相等，则表明当前行没有读完
             if ((m_checked_idx + 1) == m_read_idx)
             {
                 return LINE_OPEN;
             }
+            //由于http请求是以\n\r分割的，因此若下一个字符为\n则表明当前请求类别已经读完了
             else if (m_read_buf[m_checked_idx + 1] == '\n') 
             {
+                //该代码中大量使用了给某个字符串添'\0'的操作，这是为了分割字符串
                 m_read_buf[m_checked_idx ++] = '\0';
                 m_read_buf[m_checked_idx ++] = '\0';
                 return LINE_OK;
@@ -168,6 +183,7 @@ bool http_conn::read()
 //解析HTTP请求行， 获得请求方法、目标URL， 以及HTTP版本号
 http_conn::HTTP_CODE http_conn::parse_request_line(char *text)
 {
+    //
     m_url = strpbrk(text, " \t");
     if (!m_url) 
     {
@@ -212,7 +228,7 @@ http_conn::HTTP_CODE http_conn::parse_request_line(char *text)
     {
         return BAD_REQUEST;
     }
-    fprintf(stdout, "The m_url is:%s\n", m_url);
+    //fprintf(stdout, "The m_url is:%s\n", m_url);
     m_check_state = CHECK_STATE_HEADER;
     return NO_REQUEST;
 }
@@ -261,9 +277,10 @@ http_conn::HTTP_CODE http_conn::parse_headers(char *text)
         text += strspn(text, " \t");
         m_host = text;
     }
+    //其他头部字段
     else
     {
-        printf("oop! unknow header %s\n", text);
+        //printf("oop! unknow header %s\n", text);
     }
     
     return NO_REQUEST;
@@ -283,24 +300,30 @@ http_conn::HTTP_CODE http_conn::parse_content(char *text)
     return NO_REQUEST;
 }
 
-/*主状态机， 其分析请参考8.6节*/
+//主状态机，用于处理
 http_conn::HTTP_CODE http_conn::process_read()
 {
     LINE_STATUS line_status = LINE_OK;
     HTTP_CODE ret = NO_REQUEST;
     char * text = 0;
-   
+    //m_check_state标识主状态机当前所处状态
+    //line_status标识被解析的当前行的状态
     while (((m_check_state == CHECK_STATE_CONTENT) && (line_status == LINE_OK))
         || ((line_status = parse_line()) == LINE_OK))
         {
+            //getline函数是m_readbuf+start_line的形式，因为在parse_line函数中已经将第一个\r\n处改成了
+            //‘\0’因此此时的text就是到第一个\r\n的字符串，m_checked_idx则在\n的下一个字符的位置
             text = get_line();
             m_start_line = m_checked_idx;
-            fprintf(stdout, "got 1 http line: %d\n", m_checked_idx);
+            //此时的m_checked_idx就是当前行的长度
+            //fprintf(stdout, "got 1 http line: %d\n", m_checked_idx);
 
             switch (m_check_state)
             {
                 case CHECK_STATE_REQUESTLINE:
                 {
+                    //成功后返回NO_REQUEST
+                    //该函数的作用，是提取请求行的关键信息并将m_checked_state转为HEADER的形式
                     ret = parse_request_line(text);
                     if (ret == BAD_REQUEST) 
                     {
@@ -356,16 +379,17 @@ http_conn::HTTP_CODE http_conn::do_request()
     }
 
     strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
+    //stat获取文件信息并保存的m_file_stat结构体中
     if (stat(m_real_file, &m_file_stat) < 0)
     {
         return NO_RESOURCE;
     }
-    
+    //st_mode是文件类型,S_IROTH是内核权限值00004
     if (!(m_file_stat.st_mode & S_IROTH))
     {
         return FORBIDDEN_REQUEST;
     }
-
+    //是目录
     if (S_ISDIR(m_file_stat.st_mode))
     {
         return BAD_REQUEST;
@@ -449,7 +473,7 @@ bool http_conn::add_response(const char * format, ...)
     {
         return false;
     }
-
+    //va这个系列是来遍历参数列表中的参数的，因为本函数参数是个列表
     va_list arg_list;
     va_start(arg_list, format);
     int len = vsnprintf(m_write_buf + m_write_idx, WRITE_BUFFER_SIZE - 1 - m_write_idx,
@@ -502,20 +526,20 @@ bool http_conn::process_write(HTTP_CODE ret)
 {
     switch (ret)
     {
-    case INTERNAL_ERROR:
-        {
-            add_status_line(500, error_500_title);
-            add_headers(strlen(error_500_form));
-            if (!add_content(error_500_form)) 
+        case INTERNAL_ERROR:
             {
-                return false;
+                add_status_line(500, error_500_title);
+                add_headers(strlen(error_500_form));
+                if (!add_content(error_500_form)) 
+                {
+                    return false;
+                }
+                break;
             }
-            break;
-        }
-    case BAD_REQUEST:
-        {
-            add_status_line(400, error_400_title);
-            add_headers(strlen(error_400_form));
+        case BAD_REQUEST:
+            {
+                add_status_line(400, error_400_title);
+                add_headers(strlen(error_400_form));
             if (!add_content(error_400_form)) 
             {
                 return false;
@@ -548,6 +572,8 @@ bool http_conn::process_write(HTTP_CODE ret)
             if (m_file_stat.st_size != 0) 
             {
                 add_headers(m_file_stat.st_size);
+                //第0个元素是输出上面add_XX函数的信息
+                //第1个元素才是要输出的文件
                 m_iv[0].iov_base = m_write_buf;
                 m_iv[0].iov_len  = m_write_idx;
                 m_iv[1].iov_base = m_file_address;
@@ -584,9 +610,12 @@ bool http_conn::process_write(HTTP_CODE ret)
 //this is interface or HTTP request
 void http_conn::process()
 {
+    //HTTP_CODE返回请求类型
     HTTP_CODE read_ret = process_read();
+    //NO_REQUEST表示没有请求或者当前的请求行已经处理完毕
     if (read_ret == NO_REQUEST) 
     {
+        //确认请求结束后，向epoll中重新注册oneshot事件
         modfd(m_epollfd, m_sockfd, EPOLLIN);
         return;
     }
@@ -596,6 +625,6 @@ void http_conn::process()
     {
         close_conn();
     }
-    
+    //在一个socket的请求被处理完毕之后，都应该重置epolloneshot时间，以便于其他线程使用
     modfd(m_epollfd, m_sockfd, EPOLLOUT);
 }

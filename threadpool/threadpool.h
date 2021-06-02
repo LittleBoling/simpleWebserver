@@ -12,7 +12,7 @@ template<typename T>
 class threadpool
 {
 public:
-    threadpool(int thread_number=10, int max_requests=10000);
+    threadpool(int thread_number=8, int max_requests=10000);
     ~threadpool();
 
     bool append(T* request);
@@ -30,6 +30,7 @@ private:
     bool m_stop;
 };
 
+//默认创建8个线程，然后分离线程
 template<typename T>
 threadpool<T>::threadpool(int thread_number, int max_requests):
     m_thread_number(thread_number), m_max_requests(max_requests),m_stop(false), m_threads(NULL)
@@ -72,7 +73,9 @@ threadpool<T>::~threadpool()
 template<typename T>
 bool threadpool<T>::append(T* request)
 {
+    //添加互斥锁，保证同一时间只有一个线程往工作队列中添加数据
     m_queuelocker.lock();
+    //工作队列是一个双向链表
     if(m_workqueue.size()>m_max_requests)
     {
         m_queuelocker.unlock();
@@ -85,6 +88,9 @@ bool threadpool<T>::append(T* request)
     return true;
 }
 
+//pthread_create函数的第三个参数要求一个静态函数
+//静态成员函数存在于对象之外，对象中不包含任何跟静态数据有关的成员
+//静态成员函数不能访问动态成员变量，因此要通过静态函数调用动态函数的方式来使用
 template<typename T>
 void* threadpool<T>::worker(void* arg)
 {
@@ -92,7 +98,7 @@ void* threadpool<T>::worker(void* arg)
     pool->run();
     return pool;
 }
-
+//获得一个工作线程
 template<typename T>
 void threadpool<T>::run()
 {

@@ -5,6 +5,9 @@
 #include<pthread.h>
 #include<semaphore.h>
 
+/*
+ * @Funcion: Posix信号，post将sem加一，sem value>0时将随即唤醒一个正在执行sem_wait的线程
+*/
 class sem
 {
 public:
@@ -36,6 +39,10 @@ private:
     sem_t m_sem;
 };
 
+
+/*
+ *@Function: 互斥锁
+ */
 class locker
 {
 public:
@@ -64,6 +71,10 @@ private:
     pthread_mutex_t m_mutex;
 };
 
+/*
+ *@Function:条件变量，逻辑上是当线程达到某个值时被触发
+ *@Note:构造函数中初始化了一个mutex，是因为cond_wait函数需要接受一个mutex参数
+ */
 class cond
 {
 public:
