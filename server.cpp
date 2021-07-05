@@ -70,16 +70,45 @@ void show_error(int connfd, const char* info)
     close(connfd);
 }
 
+void writeLog()
+{
+    if(1)
+    {
+        Log::get_instance()->init("./WebServerLog", 1, 2000, 800000,800);
+    }
+    else
+        Log::get_instance()->init("./WebServerLog", 1, 2000, 800000, 0);
+}
+
+void sqlConnPool(http_conn* users)
+{
+    //初始化数据库连接池
+    connection_pool* m_connPool = connection_pool::GetInstance();
+    m_connPool->init("localhost", "littleboling", "abc123", "users_db", 3306, 8);
+
+    //初始化数据库读取表
+    users->initmysql_result(m_connPool);
+}
+
 int main(int argc, char* argv[])
 {
-    if(argc<=2)
+    const char* ip;
+    int port;
+    if(argc==1)
     {
-        printf("Usage: %s ip_address port_number\n", basename(argv[0]));
+        ip = "127.0.0.1";
+        port = atoi("12345");
+    }
+    else if(argc>1&&argc<=2)
+    {
+        printf("Usage: %s ip_address port_number or %s to excute\n", basename(argv[0]), basename(argv[0]));
         return 1;
     }
-
-    const char* ip = argv[1];
-    int port = atoi(argv[2]);
+    else
+    { 
+        ip = argv[1];
+        port = atoi(argv[2]);
+    }
 
     addsig(SIGPIPE, SIG_IGN);
 
@@ -138,6 +167,9 @@ int main(int argc, char* argv[])
     client_data* timerUsers = new client_data[MAX_FD];
     bool timeout = true;
     alarm(TIMESLOT);
+    
+    writeLog();
+    sqlConnPool(users);
 
     while(true)
     {

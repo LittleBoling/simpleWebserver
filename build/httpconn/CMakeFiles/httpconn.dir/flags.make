@@ -6,5 +6,5 @@ CXX_FLAGS =  -O0 -Wall -g2 -ggdb
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/littleboling/NetWorkCode/Exercise/simpleWebserver/httpconn/../locker 
+CXX_INCLUDES = -I/home/littleboling/NetWorkCode/Exercise/simpleWebserver/httpconn/../locker -I/home/littleboling/NetWorkCode/Exercise/simpleWebserver/httpconn/../log -I/home/littleboling/NetWorkCode/Exercise/simpleWebserver/httpconn/../sqlconn -I/usr/include/mysql 
 

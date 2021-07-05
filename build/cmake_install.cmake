@@ -41,6 +41,8 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/httpconn/cmake_install.cmake")
   include("/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/threadpool/cmake_install.cmake")
+  include("/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/log/cmake_install.cmake")
+  include("/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/sqlconn/cmake_install.cmake")
 
 endif()
 

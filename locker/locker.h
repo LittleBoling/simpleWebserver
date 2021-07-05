@@ -14,7 +14,14 @@ public:
     //Create semaphore
     sem()
     {
-        if(sem_init(&m_sem, 0, 0)!=0)
+    	if(sem_init(&m_sem, 0, 0)!=0)
+    	{
+    	    throw std::exception();
+    	}
+    }
+    sem(int num)
+    {
+        if(sem_init(&m_sem, 0, num)!=0)
         {
             throw std::exception();
         }
@@ -67,6 +74,10 @@ public:
     {
         return pthread_mutex_unlock(&m_mutex)==0;
     }
+    pthread_mutex_t *get()
+    {
+        return &m_mutex;
+    }
 private:
     pthread_mutex_t m_mutex;
 };
@@ -80,38 +91,49 @@ class cond
 public:
     cond()
     {
-        if(pthread_mutex_init(&m_mutex, NULL))
+        /*if(pthread_mutex_init(&m_mutex, NULL))
         {
             throw std::exception();
-        }
+        }*/
         if(pthread_cond_init(&m_cond, NULL)!=0)
         {
-            pthread_mutex_destroy(&m_mutex);
+            //pthread_mutex_destroy(&m_mutex);
             throw std::exception();
         }
     }
     ~cond()
     {
-        pthread_mutex_destroy(&m_mutex);
+        //pthread_mutex_destroy(&m_mutex);
         pthread_cond_destroy(&m_cond);
     }
-
-    bool wait()
+    //有参数，与原版不同
+    bool timewait(pthread_mutex_t *m_mutex, struct timespec t)
+    {
+        int ret = 0;
+        //pthread_mutex_lock(&m_mutex);
+        ret = pthread_cond_timedwait(&m_cond, m_mutex, &t);
+        //pthread_mutex_unlock(&m_mutex);
+        return ret == 0;
+    }
+    bool wait(pthread_mutex_t *m_mutex)
     {
         int ret=0;
-        pthread_mutex_lock(&m_mutex);
-        ret = pthread_cond_wait(&m_cond, &m_mutex);
-        pthread_mutex_unlock(&m_mutex);
+        //pthread_mutex_lock(&m_mutex);
+        ret = pthread_cond_wait(&m_cond, m_mutex);
+        //phread_mutex_unlock(&m_mutex);
         return ret==0;
     }
-    
     // 唤醒等待条件变量的线程
     bool signal()
     {
         return pthread_cond_signal(&m_cond)==0;
     }
+    bool broadcast()
+    {
+        return pthread_cond_broadcast(&m_cond) == 0;
+    }
 private:
-    pthread_mutex_t m_mutex;
+    //pthread_mutex_t m_mutex;
     pthread_cond_t m_cond;
 };
 

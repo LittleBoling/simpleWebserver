@@ -14,11 +14,16 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../threadpool"
   "../httpconn"
   "../timer"
+  "../log"
+  "../sqlconn"
+  "/usr/include/mysql"
   )
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
   "/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/httpconn/CMakeFiles/httpconn.dir/DependInfo.cmake"
+  "/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/log/CMakeFiles/log.dir/DependInfo.cmake"
+  "/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/sqlconn/CMakeFiles/sqlconn.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

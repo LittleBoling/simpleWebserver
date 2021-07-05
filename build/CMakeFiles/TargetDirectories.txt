@@ -6,3 +6,9 @@
 /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/httpconn/CMakeFiles/httpconn.dir
 /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/threadpool/CMakeFiles/rebuild_cache.dir
 /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/threadpool/CMakeFiles/edit_cache.dir
+/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/log/CMakeFiles/rebuild_cache.dir
+/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/log/CMakeFiles/edit_cache.dir
+/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/log/CMakeFiles/log.dir
+/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/sqlconn/CMakeFiles/edit_cache.dir
+/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/sqlconn/CMakeFiles/rebuild_cache.dir
+/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/sqlconn/CMakeFiles/sqlconn.dir

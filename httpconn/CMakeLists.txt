@@ -4,6 +4,9 @@ aux_source_directory(. DIR_LIB_HTTP)
 
 # include other .h file
 include_directories(../locker)
+include_directories(../log)
+include_directories(../sqlconn)
+include_directories(/usr/include/mysql)
 
 # Create httpconn lib
 add_library(httpconn ${DIR_LIB_HTTP})

@@ -3,5 +3,8 @@
 
 httpconn/CMakeFiles/httpconn.dir/http_conn.cpp.o
  ../locker/locker.h
+ ../log/block_queue.h
+ ../log/log.h
+ ../sqlconn/sqlconn.h
  /home/littleboling/NetWorkCode/Exercise/simpleWebserver/httpconn/http_conn.cpp
  /home/littleboling/NetWorkCode/Exercise/simpleWebserver/httpconn/http_conn.h

@@ -56,12 +56,16 @@ CMAKE_BINARY_DIR = /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build
 all: CMakeFiles/webserver.dir/all
 all: httpconn/all
 all: threadpool/all
+all: log/all
+all: sqlconn/all
 
 .PHONY : all
 
 # The main recursive "preinstall" target.
 preinstall: httpconn/preinstall
 preinstall: threadpool/preinstall
+preinstall: log/preinstall
+preinstall: sqlconn/preinstall
 
 .PHONY : preinstall
 
@@ -69,6 +73,8 @@ preinstall: threadpool/preinstall
 clean: CMakeFiles/webserver.dir/clean
 clean: httpconn/clean
 clean: threadpool/clean
+clean: log/clean
+clean: sqlconn/clean
 
 .PHONY : clean
 
@@ -89,6 +95,42 @@ httpconn/preinstall:
 httpconn/clean: httpconn/CMakeFiles/httpconn.dir/clean
 
 .PHONY : httpconn/clean
+
+#=============================================================================
+# Directory level rules for directory log
+
+# Recursive "all" directory target.
+log/all: log/CMakeFiles/log.dir/all
+
+.PHONY : log/all
+
+# Recursive "preinstall" directory target.
+log/preinstall:
+
+.PHONY : log/preinstall
+
+# Recursive "clean" directory target.
+log/clean: log/CMakeFiles/log.dir/clean
+
+.PHONY : log/clean
+
+#=============================================================================
+# Directory level rules for directory sqlconn
+
+# Recursive "all" directory target.
+sqlconn/all: sqlconn/CMakeFiles/sqlconn.dir/all
+
+.PHONY : sqlconn/all
+
+# Recursive "preinstall" directory target.
+sqlconn/preinstall:
+
+.PHONY : sqlconn/preinstall
+
+# Recursive "clean" directory target.
+sqlconn/clean: sqlconn/CMakeFiles/sqlconn.dir/clean
+
+.PHONY : sqlconn/clean
 
 #=============================================================================
 # Directory level rules for directory threadpool
@@ -113,14 +155,16 @@ threadpool/clean:
 
 # All Build rule for target.
 CMakeFiles/webserver.dir/all: httpconn/CMakeFiles/httpconn.dir/all
+CMakeFiles/webserver.dir/all: log/CMakeFiles/log.dir/all
+CMakeFiles/webserver.dir/all: sqlconn/CMakeFiles/sqlconn.dir/all
 	$(MAKE) -f CMakeFiles/webserver.dir/build.make CMakeFiles/webserver.dir/depend
 	$(MAKE) -f CMakeFiles/webserver.dir/build.make CMakeFiles/webserver.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles --progress-num=3,4 "Built target webserver"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles --progress-num=7,8 "Built target webserver"
 .PHONY : CMakeFiles/webserver.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/webserver.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles 8
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/webserver.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles 0
 .PHONY : CMakeFiles/webserver.dir/rule
@@ -161,6 +205,60 @@ httpconn: httpconn/CMakeFiles/httpconn.dir/rule
 httpconn/CMakeFiles/httpconn.dir/clean:
 	$(MAKE) -f httpconn/CMakeFiles/httpconn.dir/build.make httpconn/CMakeFiles/httpconn.dir/clean
 .PHONY : httpconn/CMakeFiles/httpconn.dir/clean
+
+#=============================================================================
+# Target rules for target log/CMakeFiles/log.dir
+
+# All Build rule for target.
+log/CMakeFiles/log.dir/all:
+	$(MAKE) -f log/CMakeFiles/log.dir/build.make log/CMakeFiles/log.dir/depend
+	$(MAKE) -f log/CMakeFiles/log.dir/build.make log/CMakeFiles/log.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles --progress-num=3,4 "Built target log"
+.PHONY : log/CMakeFiles/log.dir/all
+
+# Build rule for subdir invocation for target.
+log/CMakeFiles/log.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 log/CMakeFiles/log.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles 0
+.PHONY : log/CMakeFiles/log.dir/rule
+
+# Convenience name for target.
+log: log/CMakeFiles/log.dir/rule
+
+.PHONY : log
+
+# clean rule for target.
+log/CMakeFiles/log.dir/clean:
+	$(MAKE) -f log/CMakeFiles/log.dir/build.make log/CMakeFiles/log.dir/clean
+.PHONY : log/CMakeFiles/log.dir/clean
+
+#=============================================================================
+# Target rules for target sqlconn/CMakeFiles/sqlconn.dir
+
+# All Build rule for target.
+sqlconn/CMakeFiles/sqlconn.dir/all:
+	$(MAKE) -f sqlconn/CMakeFiles/sqlconn.dir/build.make sqlconn/CMakeFiles/sqlconn.dir/depend
+	$(MAKE) -f sqlconn/CMakeFiles/sqlconn.dir/build.make sqlconn/CMakeFiles/sqlconn.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles --progress-num=5,6 "Built target sqlconn"
+.PHONY : sqlconn/CMakeFiles/sqlconn.dir/all
+
+# Build rule for subdir invocation for target.
+sqlconn/CMakeFiles/sqlconn.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 sqlconn/CMakeFiles/sqlconn.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles 0
+.PHONY : sqlconn/CMakeFiles/sqlconn.dir/rule
+
+# Convenience name for target.
+sqlconn: sqlconn/CMakeFiles/sqlconn.dir/rule
+
+.PHONY : sqlconn
+
+# clean rule for target.
+sqlconn/CMakeFiles/sqlconn.dir/clean:
+	$(MAKE) -f sqlconn/CMakeFiles/sqlconn.dir/build.make sqlconn/CMakeFiles/sqlconn.dir/clean
+.PHONY : sqlconn/CMakeFiles/sqlconn.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

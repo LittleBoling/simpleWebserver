@@ -3,6 +3,9 @@
 
 CMakeFiles/webserver.dir/server.cpp.o: ../httpconn/http_conn.h
 CMakeFiles/webserver.dir/server.cpp.o: ../locker/locker.h
+CMakeFiles/webserver.dir/server.cpp.o: ../log/block_queue.h
+CMakeFiles/webserver.dir/server.cpp.o: ../log/log.h
+CMakeFiles/webserver.dir/server.cpp.o: ../sqlconn/sqlconn.h
 CMakeFiles/webserver.dir/server.cpp.o: ../threadpool/threadpool.h
 CMakeFiles/webserver.dir/server.cpp.o: ../timer/timer_heap.h
 CMakeFiles/webserver.dir/server.cpp.o: ../server.cpp

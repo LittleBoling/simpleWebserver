@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsqlconn.a  CMakeFiles/sqlconn.dir/sqlconn.cpp.o
+/usr/bin/ranlib libsqlconn.a

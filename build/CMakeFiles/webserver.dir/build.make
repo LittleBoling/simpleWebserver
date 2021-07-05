@@ -80,6 +80,8 @@ webserver_EXTERNAL_OBJECTS =
 webserver: CMakeFiles/webserver.dir/server.cpp.o
 webserver: CMakeFiles/webserver.dir/build.make
 webserver: httpconn/libhttpconn.a
+webserver: log/liblog.a
+webserver: sqlconn/libsqlconn.a
 webserver: CMakeFiles/webserver.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/littleboling/NetWorkCode/Exercise/simpleWebserver/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable webserver"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/webserver.dir/link.txt --verbose=$(VERBOSE)

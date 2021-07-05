@@ -1,6 +1,7 @@
 #include "http_conn.h"
 #include <sys/uio.h>
 #include <mysql/mysql.h>
+#include <map>
 
 //定义HTTP响应的一些状态
 //
@@ -15,6 +16,40 @@ const char * error_500_title = "Internal Error";
 const char * error_500_form = "There was an unusual problem serving the request file.\n";
 //网站的根目录
 const char * doc_root = "../testfile";
+map<string, string> sqlUsers;
+locker m_sqllock;
+connection_pool* sqlPool;
+void http_conn::initmysql_result(connection_pool *connPool)
+{
+    sqlPool = connPool;
+    //先从连接池中取一个连接
+    MYSQL *mysql = NULL;
+    connectionRAII mysqlcon(&mysql, connPool);
+
+    //在user表中检索username，passwd数据，浏览器端输入
+    if (mysql_query(mysql, "SELECT user_name,passward FROM userInfo"))
+    {
+        LOG_ERROR("SELECT error:%s\n", mysql_error(mysql));
+        printf("Select error:%s\n", mysql_error(mysql));
+    }
+
+    //从表中检索完整的结果集
+    MYSQL_RES *result = mysql_store_result(mysql);
+
+    //返回结果集中的列数
+    int num_fields = mysql_num_fields(result);
+
+    //返回所有字段结构的数组
+    MYSQL_FIELD *fields = mysql_fetch_fields(result);
+
+    //从结果集中获取下一行，将对应的用户名和密码，存入map中
+    while (MYSQL_ROW row = mysql_fetch_row(result))
+    {
+        string temp1(row[0]);
+        string temp2(row[1]);
+        sqlUsers[temp1] = temp2;
+    }
+}
 
 //设置socket文件描述符为非阻塞
 //这是因为ET模式要求其文件描述符应该为非阻塞的，否则容易产生丢失连接的问题
@@ -91,6 +126,7 @@ void http_conn::init(int sockfd, const sockaddr_in &addr)
 //初始化需要使用的全局变量
 void http_conn::init()
 {
+    mysql = NULL;
     m_check_state = CHECK_STATE_REQUESTLINE;//标记当前行是HTTP请求中（请求头/请求行/请求内容）的哪一部分
     m_linger = false;
 
@@ -280,7 +316,7 @@ http_conn::HTTP_CODE http_conn::parse_headers(char *text)
     //其他头部字段
     else
     {
-        //printf("oop! unknow header %s\n", text);
+        LOG_INFO("Unknow header %s\n", text);
     }
     
     return NO_REQUEST;
@@ -370,12 +406,60 @@ http_conn::HTTP_CODE http_conn::do_request()
     strcpy(m_real_file, doc_root);
     int len = strlen(doc_root);
     //Insert my post code
-    if(strncasecmp(m_url, "/test", 5)==0)
+    if(strncasecmp(m_url, "/", 5)==0)
         strcpy(m_url, "/log.html");
     //Get POST request and process m_content
     else if(strncasecmp(m_url, "/login", 6)==0)
     {
         strcpy(m_url, "/caton5.png");
+    }
+    else if(strncasecmp(m_url, "/register", 9)==0)
+    {
+        strcpy(m_url, "/register.html");
+    }
+
+    if(m_content!=NULL)
+    {
+        char name[100], passward[100];
+        memset(name, '\0', 100);
+        memset(passward, '\0', 100);
+        int index = 5;
+        int i=0;
+        //m_content="name=test&passward=test"
+        while(m_content[index]!='&')
+        {
+            name[i++] = m_content[index++];
+        }
+        index += 10;
+        i=0;
+        while(m_content[index]!='\0')
+        {
+            passward[i++] = m_content[index++];
+        }
+
+        //MYSQL *mysql = NULL;
+        char* sqlSelect = (char*)malloc(sizeof(char)*200);
+        strcat(sqlSelect, "Select user_name,passward from userInfo where user_name='");
+        strcat(sqlSelect, name);
+        strcat(sqlSelect, "'and passward='");
+        strcat(sqlSelect, passward);
+        strcat(sqlSelect, "'");
+        connectionRAII mysqlcon(&mysql, sqlPool);
+        int res = mysql_query(mysql, sqlSelect);
+        if(res)
+        {
+            strcpy(m_url, "/error.jpeg");
+        }
+        
+        MYSQL_RES* queryResult = mysql_store_result(mysql);
+        //int num_fields = mysql_num_fields(result);
+        MYSQL_ROW row=mysql_fetch_row(queryResult);
+
+        if(row==NULL)
+        {
+            strcpy(m_url, "/caton2.jpg");
+        }
+        mysql_free_result(queryResult);
     }
 
     strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);

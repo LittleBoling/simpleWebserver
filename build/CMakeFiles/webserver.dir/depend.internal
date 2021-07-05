@@ -4,6 +4,9 @@
 CMakeFiles/webserver.dir/server.cpp.o
  ../httpconn/http_conn.h
  ../locker/locker.h
+ ../log/block_queue.h
+ ../log/log.h
+ ../sqlconn/sqlconn.h
  ../threadpool/threadpool.h
  ../timer/timer_heap.h
  /home/littleboling/NetWorkCode/Exercise/simpleWebserver/server.cpp

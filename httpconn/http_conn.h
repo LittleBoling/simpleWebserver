@@ -19,6 +19,8 @@
 #include <stdarg.h>
 #include <errno.h>
 #include "locker.h"
+#include "log.h"
+#include "sqlconn.h"
 
 class http_conn
 {
@@ -43,6 +45,7 @@ public:
     ~http_conn(){}
 
 public:
+    void initmysql_result(connection_pool*);
     //initial new accept connection
     void init(int sockfd, const sockaddr_in &addr);
     //close connection
@@ -85,9 +88,8 @@ private:
 
 public:
     static int m_epollfd;
-
     static int m_user_count;
-
+    MYSQL* mysql;
 private:
     int m_sockfd;
     sockaddr_in m_address;

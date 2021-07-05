@@ -1,1 +1,1 @@
-/usr/bin/c++   -O0 -Wall -g2 -ggdb  -rdynamic CMakeFiles/webserver.dir/server.cpp.o  -o webserver  httpconn/libhttpconn.a -lpthread 
+/usr/bin/c++   -O0 -Wall -g2 -ggdb  -rdynamic CMakeFiles/webserver.dir/server.cpp.o  -o webserver  httpconn/libhttpconn.a log/liblog.a sqlconn/libsqlconn.a -lmysqlclient -lpthread 

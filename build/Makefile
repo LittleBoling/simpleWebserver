@@ -136,6 +136,32 @@ httpconn/fast:
 	$(MAKE) -f httpconn/CMakeFiles/httpconn.dir/build.make httpconn/CMakeFiles/httpconn.dir/build
 .PHONY : httpconn/fast
 
+#=============================================================================
+# Target rules for targets named log
+
+# Build rule for target.
+log: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 log
+.PHONY : log
+
+# fast build rule for target.
+log/fast:
+	$(MAKE) -f log/CMakeFiles/log.dir/build.make log/CMakeFiles/log.dir/build
+.PHONY : log/fast
+
+#=============================================================================
+# Target rules for targets named sqlconn
+
+# Build rule for target.
+sqlconn: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sqlconn
+.PHONY : sqlconn
+
+# fast build rule for target.
+sqlconn/fast:
+	$(MAKE) -f sqlconn/CMakeFiles/sqlconn.dir/build.make sqlconn/CMakeFiles/sqlconn.dir/build
+.PHONY : sqlconn/fast
+
 server.o: server.cpp.o
 
 .PHONY : server.o
@@ -173,6 +199,8 @@ help:
 	@echo "... edit_cache"
 	@echo "... webserver"
 	@echo "... httpconn"
+	@echo "... log"
+	@echo "... sqlconn"
 	@echo "... server.o"
 	@echo "... server.i"
 	@echo "... server.s"

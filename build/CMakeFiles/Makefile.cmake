@@ -12,6 +12,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.16.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.16.3/CMakeSystem.cmake"
   "../httpconn/CMakeLists.txt"
+  "../log/CMakeLists.txt"
+  "../sqlconn/CMakeLists.txt"
   "../threadpool/CMakeLists.txt"
   "/usr/share/cmake-3.16/Modules/CMakeCInformation.cmake"
   "/usr/share/cmake-3.16/Modules/CMakeCXXInformation.cmake"
@@ -51,10 +53,14 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "httpconn/CMakeFiles/CMakeDirectoryInformation.cmake"
   "threadpool/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "log/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "sqlconn/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/webserver.dir/DependInfo.cmake"
   "httpconn/CMakeFiles/httpconn.dir/DependInfo.cmake"
+  "log/CMakeFiles/log.dir/DependInfo.cmake"
+  "sqlconn/CMakeFiles/sqlconn.dir/DependInfo.cmake"
   )
